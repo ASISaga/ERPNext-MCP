@@ -412,19 +412,204 @@ class AccountingOperations:
         logger.info(f"Getting {report_type} for company: {company}")
 
         try:
-            # This would require calling ERPNext report APIs
-            # For now, return a placeholder structure
-            result = {
-                "company": company,
-                "report_type": report_type,
-                "from_date": from_date,
-                "to_date": to_date,
-                "data": "This would require a custom ERPNext report API call",
-            }
+            # Call the appropriate specific report method
+            if report_type.lower() in ["balance sheet", "balance_sheet"]:
+                return self.get_balance_sheet(company, from_date, to_date)
+            elif report_type.lower() in ["profit and loss", "profit_and_loss", "income statement", "income_statement"]:
+                return self.get_profit_and_loss(company, from_date, to_date)
+            elif report_type.lower() in ["cash flow", "cash_flow", "cash flow statement", "cash_flow_statement"]:
+                return self.get_cash_flow(company, from_date, to_date)
+            else:
+                raise ValidationError(
+                    f"Unsupported report type: {report_type}. Supported types: Balance Sheet, Profit and Loss, Cash Flow"
+                )
 
-            return format_success_response(
-                result, f"{report_type} retrieved successfully"
-            )
         except Exception as e:
             logger.error(f"Failed to get financial statements: {str(e)}")
+            raise
+
+    def get_balance_sheet(
+        self, company: str, from_date: str, to_date: str, **kwargs
+    ) -> Dict[str, Any]:
+        """Get Balance Sheet report.
+
+        Args:
+            company: Company name
+            from_date: From date (YYYY-MM-DD format)
+            to_date: To date (YYYY-MM-DD format)
+            **kwargs: Additional report parameters
+
+        Returns:
+            Balance Sheet data
+        """
+        logger.info(f"Getting Balance Sheet for company: {company}")
+
+        try:
+            # Prepare report filters
+            filters = {
+                "company": company,
+                "from_date": from_date,
+                "to_date": to_date,
+                "periodicity": kwargs.get("periodicity", "Monthly"),
+                "filter_based_on": kwargs.get("filter_based_on", "Date Range"),
+                **kwargs
+            }
+
+            # Execute Balance Sheet report via ERPNext API
+            result = self.client.execute_report("Balance Sheet", filters)
+
+            return format_success_response(
+                result, "Balance Sheet retrieved successfully"
+            )
+        except Exception as e:
+            logger.error(f"Failed to get Balance Sheet: {str(e)}")
+            raise
+
+    def get_profit_and_loss(
+        self, company: str, from_date: str, to_date: str, **kwargs
+    ) -> Dict[str, Any]:
+        """Get Profit and Loss Statement (Income Statement).
+
+        Args:
+            company: Company name
+            from_date: From date (YYYY-MM-DD format)
+            to_date: To date (YYYY-MM-DD format)
+            **kwargs: Additional report parameters
+
+        Returns:
+            Profit and Loss Statement data
+        """
+        logger.info(f"Getting Profit and Loss Statement for company: {company}")
+
+        try:
+            # Prepare report filters
+            filters = {
+                "company": company,
+                "from_date": from_date,
+                "to_date": to_date,
+                "periodicity": kwargs.get("periodicity", "Monthly"),
+                "filter_based_on": kwargs.get("filter_based_on", "Date Range"),
+                **kwargs
+            }
+
+            # Execute Profit and Loss report via ERPNext API
+            result = self.client.execute_report("Profit and Loss Statement", filters)
+
+            return format_success_response(
+                result, "Profit and Loss Statement retrieved successfully"
+            )
+        except Exception as e:
+            logger.error(f"Failed to get Profit and Loss Statement: {str(e)}")
+            raise
+
+    def get_cash_flow(
+        self, company: str, from_date: str, to_date: str, **kwargs
+    ) -> Dict[str, Any]:
+        """Get Cash Flow Statement.
+
+        Args:
+            company: Company name
+            from_date: From date (YYYY-MM-DD format)
+            to_date: To date (YYYY-MM-DD format)
+            **kwargs: Additional report parameters
+
+        Returns:
+            Cash Flow Statement data
+        """
+        logger.info(f"Getting Cash Flow Statement for company: {company}")
+
+        try:
+            # Prepare report filters
+            filters = {
+                "company": company,
+                "from_date": from_date,
+                "to_date": to_date,
+                "periodicity": kwargs.get("periodicity", "Monthly"),
+                "filter_based_on": kwargs.get("filter_based_on", "Date Range"),
+                **kwargs
+            }
+
+            # Execute Cash Flow report via ERPNext API
+            result = self.client.execute_report("Cash Flow", filters)
+
+            return format_success_response(
+                result, "Cash Flow Statement retrieved successfully"
+            )
+        except Exception as e:
+            logger.error(f"Failed to get Cash Flow Statement: {str(e)}")
+            raise
+
+    def get_trial_balance(
+        self, company: str, from_date: str, to_date: str, **kwargs
+    ) -> Dict[str, Any]:
+        """Get Trial Balance report.
+
+        Args:
+            company: Company name
+            from_date: From date (YYYY-MM-DD format)
+            to_date: To date (YYYY-MM-DD format)
+            **kwargs: Additional report parameters
+
+        Returns:
+            Trial Balance data
+        """
+        logger.info(f"Getting Trial Balance for company: {company}")
+
+        try:
+            # Prepare report filters
+            filters = {
+                "company": company,
+                "from_date": from_date,
+                "to_date": to_date,
+                "periodicity": kwargs.get("periodicity", "Monthly"),
+                **kwargs
+            }
+
+            # Execute Trial Balance report via ERPNext API
+            result = self.client.execute_report("Trial Balance", filters)
+
+            return format_success_response(
+                result, "Trial Balance retrieved successfully"
+            )
+        except Exception as e:
+            logger.error(f"Failed to get Trial Balance: {str(e)}")
+            raise
+
+    def get_general_ledger(
+        self, company: str, from_date: str, to_date: str, **kwargs
+    ) -> Dict[str, Any]:
+        """Get General Ledger report.
+
+        Args:
+            company: Company name
+            from_date: From date (YYYY-MM-DD format)
+            to_date: To date (YYYY-MM-DD format)
+            **kwargs: Additional report parameters like account, party, etc.
+
+        Returns:
+            General Ledger data
+        """
+        logger.info(f"Getting General Ledger for company: {company}")
+
+        try:
+            # Prepare report filters
+            filters = {
+                "company": company,
+                "from_date": from_date,
+                "to_date": to_date,
+                "group_by": kwargs.get("group_by", ""),
+                "account": kwargs.get("account", ""),
+                "party_type": kwargs.get("party_type", ""),
+                "party": kwargs.get("party", ""),
+                **kwargs
+            }
+
+            # Execute General Ledger report via ERPNext API
+            result = self.client.execute_report("General Ledger", filters)
+
+            return format_success_response(
+                result, "General Ledger retrieved successfully"
+            )
+        except Exception as e:
+            logger.error(f"Failed to get General Ledger: {str(e)}")
             raise
