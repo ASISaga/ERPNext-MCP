@@ -13,6 +13,9 @@ class DocTypes(str, Enum):
     PAYMENT_ENTRY = "Payment Entry"
     JOURNAL_ENTRY = "Journal Entry"
     ACCOUNT = "Account"
+    COST_CENTER = "Cost Center"
+    BUDGET = "Budget"
+    FISCAL_YEAR = "Fiscal Year"
     
     # Sales
     SALES_ORDER = "Sales Order"
@@ -32,17 +35,41 @@ class DocTypes(str, Enum):
     WAREHOUSE = "Warehouse"
     ITEM_GROUP = "Item Group"
     STOCK_LEDGER_ENTRY = "Stock Ledger Entry"
+    ITEM_PRICE = "Item Price"
+    PRICE_LIST = "Price List"
+    BATCH = "Batch"
+    SERIAL_NO = "Serial No"
     
     # HR
     EMPLOYEE = "Employee"
     ATTENDANCE = "Attendance"
     LEAVE_APPLICATION = "Leave Application"
     SALARY_SLIP = "Salary Slip"
+    SALARY_STRUCTURE = "Salary Structure"
+    JOB_APPLICANT = "Job Applicant"
     
     # Projects
     PROJECT = "Project"
     TASK = "Task"
     TIMESHEET = "Timesheet"
+    
+    # Manufacturing
+    BOM = "BOM"
+    WORK_ORDER = "Work Order"
+    PRODUCTION_PLAN = "Production Plan"
+    JOB_CARD = "Job Card"
+    QUALITY_INSPECTION = "Quality Inspection"
+    
+    # CRM
+    LEAD = "Lead"
+    OPPORTUNITY = "Opportunity"
+    CAMPAIGN = "Campaign"
+    
+    # Asset Management
+    ASSET = "Asset"
+    ASSET_CATEGORY = "Asset Category"
+    ASSET_MAINTENANCE = "Asset Maintenance"
+    ASSET_MOVEMENT = "Asset Movement"
 
 
 # Mapping of business operations to DocTypes
@@ -53,6 +80,9 @@ BUSINESS_OPERATIONS = {
     "create_payment": DocTypes.PAYMENT_ENTRY,
     "create_journal_entry": DocTypes.JOURNAL_ENTRY,
     "approve_invoice": DocTypes.SALES_INVOICE,  # Will use submit operation
+    "create_cost_center": DocTypes.COST_CENTER,
+    "create_budget": DocTypes.BUDGET,
+    "create_fiscal_year": DocTypes.FISCAL_YEAR,
     
     # Sales operations
     "create_sales_order": DocTypes.SALES_ORDER,
@@ -70,16 +100,41 @@ BUSINESS_OPERATIONS = {
     "create_item": DocTypes.ITEM,
     "create_stock_entry": DocTypes.STOCK_ENTRY,
     "create_warehouse": DocTypes.WAREHOUSE,
+    "create_item_price": DocTypes.ITEM_PRICE,
+    "create_price_list": DocTypes.PRICE_LIST,
+    "create_batch": DocTypes.BATCH,
+    "create_serial_no": DocTypes.SERIAL_NO,
     
     # HR operations
     "create_employee": DocTypes.EMPLOYEE,
     "mark_attendance": DocTypes.ATTENDANCE,
     "create_leave_application": DocTypes.LEAVE_APPLICATION,
+    "create_salary_structure": DocTypes.SALARY_STRUCTURE,
+    "create_salary_slip": DocTypes.SALARY_SLIP,
+    "create_job_applicant": DocTypes.JOB_APPLICANT,
     
     # Project operations
     "create_project": DocTypes.PROJECT,
     "create_task": DocTypes.TASK,
     "log_time": DocTypes.TIMESHEET,
+    
+    # Manufacturing operations
+    "create_bom": DocTypes.BOM,
+    "create_work_order": DocTypes.WORK_ORDER,
+    "create_production_plan": DocTypes.PRODUCTION_PLAN,
+    "create_job_card": DocTypes.JOB_CARD,
+    "create_quality_inspection": DocTypes.QUALITY_INSPECTION,
+    
+    # CRM operations
+    "create_lead": DocTypes.LEAD,
+    "create_opportunity": DocTypes.OPPORTUNITY,
+    "create_campaign": DocTypes.CAMPAIGN,
+    
+    # Asset Management operations
+    "create_asset": DocTypes.ASSET,
+    "create_asset_category": DocTypes.ASSET_CATEGORY,
+    "create_asset_maintenance": DocTypes.ASSET_MAINTENANCE,
+    "create_asset_movement": DocTypes.ASSET_MOVEMENT,
 }
 
 
