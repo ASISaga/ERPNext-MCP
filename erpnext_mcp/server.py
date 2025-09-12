@@ -18,6 +18,8 @@ from .domains.projects import ProjectsOperations
 from .domains.manufacturing import ManufacturingOperations
 from .domains.crm import CRMOperations
 from .domains.assets import AssetManagementOperations
+from .domains.support import SupportOperations
+from .domains.utilities import UtilitiesOperations
 from .utils.error_handling import ERPNextError, format_error_response
 
 
@@ -39,11 +41,13 @@ projects: Optional[ProjectsOperations] = None
 manufacturing: Optional[ManufacturingOperations] = None
 crm: Optional[CRMOperations] = None
 assets: Optional[AssetManagementOperations] = None
+support: Optional[SupportOperations] = None
+utilities: Optional[UtilitiesOperations] = None
 
 
 def initialize_client():
     """Initialize ERPNext client and domain operations."""
-    global client, accounting, purchasing, sales, inventory, hr, projects, manufacturing, crm, assets
+    global client, accounting, purchasing, sales, inventory, hr, projects, manufacturing, crm, assets, support, utilities
 
     try:
         client = ERPNextClient()
@@ -58,6 +62,8 @@ def initialize_client():
         manufacturing = ManufacturingOperations(client)
         crm = CRMOperations(client)
         assets = AssetManagementOperations(client)
+        support = SupportOperations(client)
+        utilities = UtilitiesOperations(client)
 
         logger.info("ERPNext MCP Server initialized successfully")
     except Exception as e:
@@ -249,6 +255,61 @@ def approve_purchase_order(po_name: str) -> Dict[str, Any]:
     return purchasing.approve_purchase_order(po_name)
 
 
+@app.tool()
+@handle_operation_error
+def create_purchase_receipt(
+    supplier: str, items: List[Dict[str, Any]], posting_date: str = None
+) -> Dict[str, Any]:
+    """Create a purchase receipt for goods received.
+
+    Args:
+        supplier: Supplier name or ID
+        items: List of items received with item_code, qty, rate, warehouse
+        posting_date: Receipt date (YYYY-MM-DD format)
+    """
+    return purchasing.create_purchase_receipt(supplier, items, posting_date)
+
+
+@app.tool()
+@handle_operation_error
+def create_purchase_return(
+    return_against: str, items: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """Create a purchase return against a purchase receipt.
+
+    Args:
+        return_against: Original purchase receipt name
+        items: List of items being returned with item_code, qty
+    """
+    return purchasing.create_purchase_return(return_against, items)
+
+
+@app.tool()
+@handle_operation_error
+def submit_purchase_receipt(pr_name: str) -> Dict[str, Any]:
+    """Submit/approve a purchase receipt.
+
+    Args:
+        pr_name: Purchase receipt name/ID to submit
+    """
+    return purchasing.submit_purchase_receipt(pr_name)
+
+
+@app.tool()
+@handle_operation_error
+def get_purchase_receipts_list(
+    supplier: str = None, status: str = None, limit: int = 20
+) -> Dict[str, Any]:
+    """Get list of purchase receipts.
+
+    Args:
+        supplier: Filter by supplier (optional)
+        status: Filter by status (optional)
+        limit: Maximum number of records
+    """
+    return purchasing.get_purchase_receipts_list(supplier, status, limit)
+
+
 # Sales Tools
 @app.tool()
 @handle_operation_error
@@ -292,6 +353,61 @@ def create_quotation(
         items: List of items with item_code, qty, rate
     """
     return sales.create_quotation(quotation_to, party_name, items)
+
+
+@app.tool()
+@handle_operation_error
+def create_delivery_note(
+    customer: str, items: List[Dict[str, Any]], posting_date: str = None
+) -> Dict[str, Any]:
+    """Create a delivery note for goods delivery.
+
+    Args:
+        customer: Customer name or ID
+        items: List of items with item_code, qty, warehouse
+        posting_date: Delivery date (YYYY-MM-DD format)
+    """
+    return sales.create_delivery_note(customer, items, posting_date)
+
+
+@app.tool()
+@handle_operation_error
+def create_sales_return(
+    return_against: str, items: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """Create a sales return against a delivery note or sales invoice.
+
+    Args:
+        return_against: Original delivery note or sales invoice name
+        items: List of items being returned with item_code, qty
+    """
+    return sales.create_sales_return(return_against, items)
+
+
+@app.tool()
+@handle_operation_error
+def submit_delivery_note(dn_name: str) -> Dict[str, Any]:
+    """Submit/approve a delivery note.
+
+    Args:
+        dn_name: Delivery note name/ID to submit
+    """
+    return sales.submit_delivery_note(dn_name)
+
+
+@app.tool()
+@handle_operation_error
+def get_delivery_notes_list(
+    customer: str = None, status: str = None, limit: int = 20
+) -> Dict[str, Any]:
+    """Get list of delivery notes.
+
+    Args:
+        customer: Filter by customer (optional)
+        status: Filter by status (optional)
+        limit: Maximum number of records
+    """
+    return sales.get_delivery_notes_list(customer, status, limit)
 
 
 # Inventory Tools
@@ -956,6 +1072,217 @@ def search_assets(query: str, limit: int = 10) -> Dict[str, Any]:
         limit: Maximum number of results
     """
     return assets.search_assets(query, limit)
+
+
+# Support/Service Tools
+@app.tool()
+@handle_operation_error
+def create_issue(
+    subject: str, customer: str, issue_type: str = "Bug", priority: str = "Medium"
+) -> Dict[str, Any]:
+    """Create a support issue.
+
+    Args:
+        subject: Issue subject/title
+        customer: Customer name
+        issue_type: Type of issue ("Bug", "Feature", "Question", etc.)
+        priority: Priority level ("Low", "Medium", "High", "Critical")
+    """
+    return support.create_issue(subject, customer, issue_type, priority)
+
+
+@app.tool()
+@handle_operation_error
+def create_service_level_agreement(
+    service_level: str, customer: str, start_date: str, end_date: str
+) -> Dict[str, Any]:
+    """Create a Service Level Agreement.
+
+    Args:
+        service_level: Service level name
+        customer: Customer name
+        start_date: SLA start date (YYYY-MM-DD format)
+        end_date: SLA end date (YYYY-MM-DD format)
+    """
+    return support.create_service_level_agreement(
+        service_level, customer, start_date, end_date
+    )
+
+
+@app.tool()
+@handle_operation_error
+def create_warranty_claim(
+    customer: str, item_code: str, serial_no: str = None
+) -> Dict[str, Any]:
+    """Create a warranty claim.
+
+    Args:
+        customer: Customer name
+        item_code: Item under warranty
+        serial_no: Serial number (optional)
+    """
+    return support.create_warranty_claim(customer, item_code, serial_no)
+
+
+@app.tool()
+@handle_operation_error
+def update_issue_status(issue_name: str, status: str) -> Dict[str, Any]:
+    """Update issue status.
+
+    Args:
+        issue_name: Issue name/ID
+        status: New status ("Open", "Replied", "Closed", "Hold")
+    """
+    return support.update_issue_status(issue_name, status)
+
+
+@app.tool()
+@handle_operation_error
+def assign_issue(issue_name: str, assigned_to: str) -> Dict[str, Any]:
+    """Assign an issue to a user.
+
+    Args:
+        issue_name: Issue name/ID
+        assigned_to: User to assign the issue to
+    """
+    return support.assign_issue(issue_name, assigned_to)
+
+
+@app.tool()
+@handle_operation_error
+def close_issue(issue_name: str, resolution: str = None) -> Dict[str, Any]:
+    """Close an issue.
+
+    Args:
+        issue_name: Issue name/ID
+        resolution: Resolution details (optional)
+    """
+    return support.close_issue(issue_name, resolution)
+
+
+@app.tool()
+@handle_operation_error
+def get_issues_list(
+    customer: str = None, status: str = None, priority: str = None, limit: int = 20
+) -> Dict[str, Any]:
+    """Get list of support issues.
+
+    Args:
+        customer: Filter by customer (optional)
+        status: Filter by status (optional)
+        priority: Filter by priority (optional)
+        limit: Maximum number of records
+    """
+    return support.get_issues_list(customer, status, priority, limit)
+
+
+@app.tool()
+@handle_operation_error
+def search_issues(query: str, limit: int = 10) -> Dict[str, Any]:
+    """Search issues by subject or customer.
+
+    Args:
+        query: Search query
+        limit: Maximum number of results
+    """
+    return support.search_issues(query, limit)
+
+
+# Utilities/Integration Tools
+@app.tool()
+@handle_operation_error
+def create_workflow(
+    workflow_name: str,
+    document_type: str,
+    states: List[Dict[str, Any]],
+    transitions: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Create a workflow for document approval.
+
+    Args:
+        workflow_name: Workflow name
+        document_type: DocType this workflow applies to
+        states: List of workflow states with state, allow_edit properties
+        transitions: List of workflow transitions with state, next_state, allowed properties
+    """
+    return utilities.create_workflow(workflow_name, document_type, states, transitions)
+
+
+@app.tool()
+@handle_operation_error
+def create_custom_field(
+    dt: str, fieldname: str, fieldtype: str, label: str
+) -> Dict[str, Any]:
+    """Create a custom field for a DocType.
+
+    Args:
+        dt: DocType to add field to
+        fieldname: Field name (must be unique)
+        fieldtype: Field type ("Data", "Int", "Float", "Select", "Check", etc.)
+        label: Field label for display
+    """
+    return utilities.create_custom_field(dt, fieldname, fieldtype, label)
+
+
+@app.tool()
+@handle_operation_error
+def backup_database() -> Dict[str, Any]:
+    """Create a database backup.
+
+    Returns:
+        Backup initiation status
+    """
+    return utilities.backup_database()
+
+
+@app.tool()
+@handle_operation_error
+def execute_report(report_name: str, filters: Dict[str, Any] = None) -> Dict[str, Any]:
+    """Execute a system report.
+
+    Args:
+        report_name: Name of the report to execute
+        filters: Report filters (optional)
+    """
+    return utilities.execute_report(report_name, filters)
+
+
+@app.tool()
+@handle_operation_error
+def bulk_update_documents(
+    doctype: str, filters: Dict[str, Any], update_fields: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Bulk update multiple documents.
+
+    Args:
+        doctype: DocType to update
+        filters: Filters to select documents (e.g., {"status": "Draft"})
+        update_fields: Fields to update (e.g., {"status": "Approved"})
+    """
+    return utilities.bulk_update_documents(doctype, filters, update_fields)
+
+
+@app.tool()
+@handle_operation_error
+def get_system_settings() -> Dict[str, Any]:
+    """Get system settings and configuration.
+
+    Returns:
+        System settings data
+    """
+    return utilities.get_system_settings()
+
+
+@app.tool()
+@handle_operation_error
+def get_document_permissions(doctype: str, name: str) -> Dict[str, Any]:
+    """Get document permissions for current user.
+
+    Args:
+        doctype: DocType name
+        name: Document name
+    """
+    return utilities.get_document_permissions(doctype, name)
 
 
 def main():

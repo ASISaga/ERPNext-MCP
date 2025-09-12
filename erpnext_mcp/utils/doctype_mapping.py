@@ -70,6 +70,17 @@ class DocTypes(str, Enum):
     ASSET_CATEGORY = "Asset Category"
     ASSET_MAINTENANCE = "Asset Maintenance"
     ASSET_MOVEMENT = "Asset Movement"
+    
+    # Support/Service
+    ISSUE = "Issue"
+    SERVICE_LEVEL_AGREEMENT = "Service Level Agreement"
+    WARRANTY_CLAIM = "Warranty Claim"
+    
+    # Utilities/Integration
+    WORKFLOW = "Workflow"
+    PRINT_FORMAT = "Print Format"
+    CUSTOM_FIELD = "Custom Field"
+    NOTIFICATION = "Notification"
 
 
 # Mapping of business operations to DocTypes
@@ -135,6 +146,17 @@ BUSINESS_OPERATIONS = {
     "create_asset_category": DocTypes.ASSET_CATEGORY,
     "create_asset_maintenance": DocTypes.ASSET_MAINTENANCE,
     "create_asset_movement": DocTypes.ASSET_MOVEMENT,
+    
+    # Support/Service operations
+    "create_issue": DocTypes.ISSUE,
+    "create_service_level_agreement": DocTypes.SERVICE_LEVEL_AGREEMENT,
+    "create_warranty_claim": DocTypes.WARRANTY_CLAIM,
+    
+    # Utilities/Integration operations
+    "create_workflow": DocTypes.WORKFLOW,
+    "create_print_format": DocTypes.PRINT_FORMAT,
+    "create_custom_field": DocTypes.CUSTOM_FIELD,
+    "create_notification": DocTypes.NOTIFICATION,
 }
 
 

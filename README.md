@@ -7,14 +7,16 @@ A comprehensive Python MCP (Model Context Protocol) server exposing all major ER
 - **Business-Friendly Operations**: Operations are exposed using familiar business terms (e.g., `create_purchase_order`, `approve_invoice`) instead of technical DocType names
 - **Domain-Based Organization**: Operations are organized into logical business domains:
   - **Accounting**: Invoices, payments, journal entries, cost centers, budgets, financial statements
-  - **Purchasing**: Purchase orders, suppliers, receipts  
-  - **Sales**: Sales orders, customers, quotations
+  - **Purchasing**: Purchase orders, suppliers, receipts, returns  
+  - **Sales**: Sales orders, customers, quotations, delivery notes, returns
   - **Inventory**: Items, stock entries, warehouses, price lists, batch/serial tracking
   - **HR**: Employees, attendance, leave applications, payroll, recruitment
   - **Projects**: Projects, tasks, timesheets
   - **Manufacturing**: BOMs, work orders, production planning, quality inspection
   - **CRM**: Leads, opportunities, campaigns, conversions
   - **Asset Management**: Asset tracking, maintenance, depreciation
+  - **Support/Service**: Issue tracking, warranty claims, SLA management
+  - **Utilities/Integration**: Workflows, custom fields, reports, bulk operations
 - **Comprehensive Error Handling**: Proper error mapping and JSON responses
 - **Field Mapping**: Automatic conversion between business parameter names and ERPNext field names
 - **JSON Results**: All operations return structured JSON responses
@@ -78,12 +80,20 @@ erpnext-mcp
 - `create_purchase_order(supplier, items, schedule_date)` - Create purchase order
 - `create_supplier(supplier_name, supplier_type)` - Create new supplier
 - `approve_purchase_order(po_name)` - Approve/submit purchase order
+- `create_purchase_receipt(supplier, items, posting_date)` - Create goods receipt
+- `create_purchase_return(return_against, items)` - Create purchase return
+- `submit_purchase_receipt(pr_name)` - Submit purchase receipt
+- `get_purchase_receipts_list(supplier, status, limit)` - Get receipts list
 
 #### Sales Operations
 
 - `create_sales_order(customer, items, delivery_date)` - Create sales order
 - `create_customer(customer_name, customer_type)` - Create new customer
 - `create_quotation(quotation_to, party_name, items)` - Create sales quotation
+- `create_delivery_note(customer, items, posting_date)` - Create delivery note
+- `create_sales_return(return_against, items)` - Create sales return
+- `submit_delivery_note(dn_name)` - Submit delivery note
+- `get_delivery_notes_list(customer, status, limit)` - Get delivery notes list
 
 #### Inventory Operations
 
@@ -140,6 +150,27 @@ erpnext-mcp
 - `transfer_asset(asset, target_location, to_employee)` - Transfer asset
 - `create_asset_depreciation(asset)` - Create depreciation entry
 - `get_assets_list(asset_category, status, limit)` - Get assets list
+
+#### Support/Service Operations
+
+- `create_issue(subject, customer, issue_type, priority)` - Create support issue
+- `create_service_level_agreement(service_level, customer, start_date, end_date)` - Create SLA
+- `create_warranty_claim(customer, item_code, serial_no)` - Create warranty claim
+- `update_issue_status(issue_name, status)` - Update issue status
+- `assign_issue(issue_name, assigned_to)` - Assign issue to user
+- `close_issue(issue_name, resolution)` - Close issue with resolution
+- `get_issues_list(customer, status, priority, limit)` - Get issues list
+- `search_issues(query, limit)` - Search issues
+
+#### Utilities/Integration Operations
+
+- `create_workflow(workflow_name, document_type, states, transitions)` - Create approval workflow
+- `create_custom_field(dt, fieldname, fieldtype, label)` - Add custom field to DocType
+- `backup_database()` - Create database backup
+- `execute_report(report_name, filters)` - Execute system report
+- `bulk_update_documents(doctype, filters, update_fields)` - Bulk update documents
+- `get_system_settings()` - Get system configuration
+- `get_document_permissions(doctype, name)` - Get document permissions
 
 #### Search and List Operations
 
@@ -240,7 +271,9 @@ erpnext_mcp/
 │   ├── projects.py        # Project operations
 │   ├── manufacturing.py   # Manufacturing operations (BOM, work orders)
 │   ├── crm.py            # CRM operations (leads, opportunities)
-│   └── assets.py         # Asset management operations
+│   ├── assets.py         # Asset management operations
+│   ├── support.py        # Support/Service operations
+│   └── utilities.py      # Utilities and integration operations
 └── utils/
     ├── __init__.py
     ├── doctype_mapping.py   # DocType and field mappings
