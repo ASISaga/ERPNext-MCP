@@ -202,3 +202,49 @@ class ERPNextClient:
         logger.info(f"Calling API method: {method}")
         result = self.client.get_api(method, params or {})
         return result
+    
+    @handle_frappe_errors
+    def execute_report(self, report_name: str, filters: Optional[Dict] = None) -> Dict[str, Any]:
+        """Execute a report and get results.
+        
+        Args:
+            report_name: Name of the report to execute
+            filters: Report filters
+            
+        Returns:
+            Report data and results
+        """
+        logger.info(f"Executing report: {report_name}")
+        
+        # Prepare API parameters for report execution
+        params = {
+            "report_name": report_name,
+            "filters": filters or {},
+        }
+        
+        # Call the report API method
+        try:
+            result = self.client.get_api("frappe.desk.query_report.run", params)
+            return result
+        except Exception as e:
+            # If the standard API doesn't work, try alternative method
+            logger.warning(f"Standard report API failed, trying alternative: {str(e)}")
+            try:
+                # Alternative: Use the report runner API
+                params = {
+                    "report_name": report_name,
+                    **filters
+                }
+                result = self.client.get_api(f"frappe.desk.reportview.get_data", params)
+                return result
+            except Exception as e2:
+                logger.error(f"Both report methods failed: {str(e2)}")
+                # Return structured placeholder data with proper format
+                return {
+                    "result": [],
+                    "columns": [],
+                    "message": f"Report execution failed: {str(e2)}. This may be due to ERPNext API limitations or missing report configuration.",
+                    "report_name": report_name,
+                    "filters": filters,
+                    "error": True
+                }

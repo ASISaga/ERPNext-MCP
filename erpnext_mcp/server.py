@@ -214,6 +214,103 @@ def get_financial_statements(
     return accounting.get_financial_statements(company, report_type, from_date, to_date)
 
 
+@app.tool()
+@handle_operation_error
+def get_balance_sheet(
+    company: str, from_date: str, to_date: str, periodicity: str = "Monthly"
+) -> Dict[str, Any]:
+    """Get Balance Sheet report for a company.
+
+    Args:
+        company: Company name
+        from_date: From date (YYYY-MM-DD format)
+        to_date: To date (YYYY-MM-DD format)
+        periodicity: Report periodicity ("Daily", "Weekly", "Monthly", "Quarterly", "Half-yearly", "Yearly")
+    """
+    return accounting.get_balance_sheet(company, from_date, to_date, periodicity=periodicity)
+
+
+@app.tool()
+@handle_operation_error
+def get_profit_and_loss(
+    company: str, from_date: str, to_date: str, periodicity: str = "Monthly"
+) -> Dict[str, Any]:
+    """Get Profit and Loss Statement (Income Statement) for a company.
+
+    Args:
+        company: Company name
+        from_date: From date (YYYY-MM-DD format)
+        to_date: To date (YYYY-MM-DD format)
+        periodicity: Report periodicity ("Daily", "Weekly", "Monthly", "Quarterly", "Half-yearly", "Yearly")
+    """
+    return accounting.get_profit_and_loss(company, from_date, to_date, periodicity=periodicity)
+
+
+@app.tool()
+@handle_operation_error
+def get_income_statement(
+    company: str, from_date: str, to_date: str, periodicity: str = "Monthly"
+) -> Dict[str, Any]:
+    """Get Income Statement (alias for Profit and Loss Statement) for a company.
+
+    Args:
+        company: Company name
+        from_date: From date (YYYY-MM-DD format)
+        to_date: To date (YYYY-MM-DD format)
+        periodicity: Report periodicity ("Daily", "Weekly", "Monthly", "Quarterly", "Half-yearly", "Yearly")
+    """
+    return accounting.get_profit_and_loss(company, from_date, to_date, periodicity=periodicity)
+
+
+@app.tool()
+@handle_operation_error
+def get_cash_flow_statement(
+    company: str, from_date: str, to_date: str, periodicity: str = "Monthly"
+) -> Dict[str, Any]:
+    """Get Cash Flow Statement for a company.
+
+    Args:
+        company: Company name
+        from_date: From date (YYYY-MM-DD format)
+        to_date: To date (YYYY-MM-DD format)
+        periodicity: Report periodicity ("Daily", "Weekly", "Monthly", "Quarterly", "Half-yearly", "Yearly")
+    """
+    return accounting.get_cash_flow(company, from_date, to_date, periodicity=periodicity)
+
+
+@app.tool()
+@handle_operation_error
+def get_trial_balance(
+    company: str, from_date: str, to_date: str, periodicity: str = "Monthly"
+) -> Dict[str, Any]:
+    """Get Trial Balance report for a company.
+
+    Args:
+        company: Company name
+        from_date: From date (YYYY-MM-DD format)
+        to_date: To date (YYYY-MM-DD format)
+        periodicity: Report periodicity ("Daily", "Weekly", "Monthly", "Quarterly", "Half-yearly", "Yearly")
+    """
+    return accounting.get_trial_balance(company, from_date, to_date, periodicity=periodicity)
+
+
+@app.tool()
+@handle_operation_error
+def get_general_ledger(
+    company: str, from_date: str, to_date: str, account: str = None, party: str = None
+) -> Dict[str, Any]:
+    """Get General Ledger report for a company.
+
+    Args:
+        company: Company name
+        from_date: From date (YYYY-MM-DD format)
+        to_date: To date (YYYY-MM-DD format)
+        account: Filter by specific account (optional)
+        party: Filter by specific party/customer/supplier (optional)
+    """
+    return accounting.get_general_ledger(company, from_date, to_date, account=account, party=party)
+
+
 # Purchasing Tools
 @app.tool()
 @handle_operation_error

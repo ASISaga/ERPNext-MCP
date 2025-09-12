@@ -73,7 +73,15 @@ erpnext-mcp
 - `create_cost_center(cost_center_name, parent_cost_center)` - Create cost center
 - `create_budget(cost_center, fiscal_year, accounts)` - Create budget
 - `create_fiscal_year(year, year_start_date, year_end_date)` - Create fiscal year
-- `get_financial_statements(company, report_type, from_date, to_date)` - Get financial reports
+
+##### Financial Reporting Operations
+- `get_financial_statements(company, report_type, from_date, to_date)` - Get financial reports (general)
+- `get_balance_sheet(company, from_date, to_date, periodicity)` - Get Balance Sheet report
+- `get_profit_and_loss(company, from_date, to_date, periodicity)` - Get Profit & Loss Statement
+- `get_income_statement(company, from_date, to_date, periodicity)` - Get Income Statement (alias for P&L)
+- `get_cash_flow_statement(company, from_date, to_date, periodicity)` - Get Cash Flow Statement
+- `get_trial_balance(company, from_date, to_date, periodicity)` - Get Trial Balance report
+- `get_general_ledger(company, from_date, to_date, account, party)` - Get General Ledger report
 
 #### Purchasing Operations
 
@@ -222,6 +230,58 @@ po_result = create_purchase_order(
 
 # Approve the purchase order
 approve_result = approve_purchase_order(po_result["data"]["name"])
+```
+
+### Financial Reporting
+
+```python
+# Get Balance Sheet for a company
+balance_sheet = get_balance_sheet(
+    company="ABC Corporation",
+    from_date="2025-01-01",
+    to_date="2025-01-31",
+    periodicity="Monthly"
+)
+
+# Get Profit and Loss Statement
+profit_loss = get_profit_and_loss(
+    company="ABC Corporation", 
+    from_date="2025-01-01",
+    to_date="2025-01-31",
+    periodicity="Monthly"
+)
+
+# Get Cash Flow Statement
+cash_flow = get_cash_flow_statement(
+    company="ABC Corporation",
+    from_date="2025-01-01", 
+    to_date="2025-01-31",
+    periodicity="Monthly"
+)
+
+# Get Trial Balance
+trial_balance = get_trial_balance(
+    company="ABC Corporation",
+    from_date="2025-01-01",
+    to_date="2025-01-31"
+)
+
+# Get General Ledger with filters
+general_ledger = get_general_ledger(
+    company="ABC Corporation",
+    from_date="2025-01-01",
+    to_date="2025-01-31",
+    account="Cash - ABC",
+    party="Customer XYZ"
+)
+
+# Use the general financial statements method
+statements = get_financial_statements(
+    company="ABC Corporation",
+    report_type="Balance Sheet",
+    from_date="2025-01-01",
+    to_date="2025-01-31"
+)
 ```
 
 ## Response Format
