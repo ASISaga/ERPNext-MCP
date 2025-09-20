@@ -23,8 +23,9 @@ A comprehensive Python MCP (Model Context Protocol) server exposing all major ER
 
 ## Installation
 
+
 ```bash
-pip install -r requirements.txt
+pip install .
 ```
 
 Or install the package:

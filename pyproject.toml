@@ -7,10 +7,9 @@ name = "erpnext-mcp"
 version = "0.1.0"
 description = "Comprehensive Python MCP server exposing ERPNext operations in business terms"
 authors = [
-    {name = "ASI Saga", email = "contact@asisaga.com"}
-]
-license = {file = "LICENSE"}
-readme = "README.md"
+[project]
+name = "erpnext-mcp"
+version = "0.1.0"
 requires-python = ">=3.8"
 keywords = ["erpnext", "frappe", "mcp", "erp", "business"]
 classifiers = [
